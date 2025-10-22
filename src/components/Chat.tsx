@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import SystemPromptEditor from './SystemPromptEditor'
+import { Settings } from 'lucide-react'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -22,6 +24,7 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false)
   const [models, setModels] = useState<OllamaModel[]>([])
   const [selectedModel, setSelectedModel] = useState<string>('mistral-small3.2:latest')
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -137,6 +140,14 @@ export default function Chat() {
           <div className="flex items-center justify-between">
             <CardTitle>BOT</CardTitle>
             <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsEditorOpen(true)}
+                title="Edit system prompt"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
               <span className="text-sm text-muted-foreground">Model:</span>
               <Select value={selectedModel} onValueChange={setSelectedModel}>
                 <SelectTrigger className="w-64">
@@ -210,6 +221,10 @@ export default function Chat() {
           </form>
         </CardContent>
       </Card>
+      <SystemPromptEditor
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+      />
     </div>
   )
 }
