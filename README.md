@@ -1,5 +1,6 @@
 # Bot
 ![alt text](ss.png)
+![alt text](ss2.png)
 A production-ready AI chatbot platform built with Next.js, TypeScript, Tailwind CSS, and shadcn/ui components.
 
 ## Features
