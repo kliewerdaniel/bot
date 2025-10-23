@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import SystemPromptEditor from './SystemPromptEditor'
+import SystemPromptManager from './SystemPromptManager'
 import { Settings } from 'lucide-react'
 
 interface Message {
@@ -25,6 +25,7 @@ export default function Chat() {
   const [models, setModels] = useState<OllamaModel[]>([])
   const [selectedModel, setSelectedModel] = useState<string>('mistral-small3.2:latest')
   const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [selectedPromptId, setSelectedPromptId] = useState<string>('default')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -69,7 +70,11 @@ export default function Chat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage.content, model: selectedModel }),
+        body: JSON.stringify({
+          message: userMessage.content,
+          model: selectedModel,
+          promptId: selectedPromptId
+        }),
       })
 
       if (!response.ok) {
@@ -221,9 +226,11 @@ export default function Chat() {
           </form>
         </CardContent>
       </Card>
-      <SystemPromptEditor
+      <SystemPromptManager
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
+        selectedPromptId={selectedPromptId}
+        onPromptSelect={setSelectedPromptId}
       />
     </div>
   )

@@ -1,24 +1,21 @@
 import { NextRequest } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import { getPromptById } from '@/lib/prompts-data'
 
 // API route for chat functionality with Ollama integration
 export async function POST(request: NextRequest) {
   try {
-    const { message, model } = await request.json()
+    const { message, model, promptId } = await request.json()
 
     if (!message) {
       return new Response('Message is required', { status: 400 })
     }
 
-    // Read the system prompt from prompt01.md
-    const promptPath = path.join(process.cwd(), '.', 'system_prompt.md')
-    let systemPrompt: string
+    // Get the selected system prompt
+    const selectedPromptId = promptId || 'default'
+    const systemPromptData = getPromptById(selectedPromptId)
 
-    try {
-      systemPrompt = fs.readFileSync(promptPath, 'utf8')
-    } catch (error) {
-      console.error('Error reading prompt01.md:', error)
+    if (!systemPromptData) {
+      console.error('System prompt not found:', selectedPromptId)
       return new Response('System prompt not found', { status: 500 })
     }
 
@@ -26,7 +23,7 @@ export async function POST(request: NextRequest) {
     const ollamaRequestBody = {
       model: model || 'mistral-small3.2:latest',
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: systemPromptData.content },
         { role: 'user', content: message }
       ],
       stream: true
